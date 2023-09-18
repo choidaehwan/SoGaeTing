@@ -10,8 +10,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        jcenter() //추가
-        maven { url 'https://jitpack.io' } //추가
+//        jcenter() //추가
+//        maven { url 'https://jitpack.io' } //추가
     }
 }
 
