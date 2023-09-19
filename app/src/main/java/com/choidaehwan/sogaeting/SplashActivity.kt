@@ -8,6 +8,10 @@ import android.os.Looper
 import android.view.LayoutInflater
 import com.choidaehwan.sogaeting.auth.IntroActivity
 import com.choidaehwan.sogaeting.databinding.ActivitySplashBinding
+import com.choidaehwan.sogaeting.utils.FirebaseAuthUtils
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class SplashActivity : AppCompatActivity() {
 
@@ -17,10 +21,18 @@ class SplashActivity : AppCompatActivity() {
         splashBinding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(splashBinding.root)
 
-        Handler(Looper.getMainLooper()).postDelayed(Runnable {
-            val intent = Intent(this, IntroActivity::class.java)
-            startActivity(intent)
-            finish()
-        }, 2000)
+        if (FirebaseAuthUtils.getUid() == "null") {
+            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                val intent = Intent(this, IntroActivity::class.java)
+                startActivity(intent)
+                finish()
+            }, 2000)
+        } else {
+            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }, 2000)
+        }
     }
 }
