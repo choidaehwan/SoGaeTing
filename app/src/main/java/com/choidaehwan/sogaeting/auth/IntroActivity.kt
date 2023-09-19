@@ -1,5 +1,6 @@
 package com.choidaehwan.sogaeting.auth
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.choidaehwan.sogaeting.R
@@ -13,6 +14,9 @@ class IntroActivity : AppCompatActivity() {
         introBinding = ActivityIntroBinding.inflate(layoutInflater)
         setContentView(introBinding.root)
 
-
+        introBinding.joinBtn.setOnClickListener {
+            val intent = Intent(this, JoinActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

@@ -17,21 +17,10 @@ class SplashActivity : AppCompatActivity() {
         splashBinding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(splashBinding.root)
 
-//        auth = Firebase.auth
-//
-//        val currentUser = auth.currentUser
-//        if (auth.currentUser?.uid == null) {
-            Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                val intent = Intent(this, IntroActivity::class.java)
-                startActivity(intent)
-                finish()
-            }, 2000)
-//        } else {
-//            Handler(Looper.getMainLooper()).postDelayed(Runnable {
-//                val intent = Intent(this, MainActivity::class.java)
-//                startActivity(intent)
-//                finish()
-//            }, 2000)
-//        }
+        Handler(Looper.getMainLooper()).postDelayed(Runnable {
+            val intent = Intent(this, IntroActivity::class.java)
+            startActivity(intent)
+            finish()
+        }, 2000)
     }
 }
