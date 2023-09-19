@@ -12,6 +12,8 @@ import com.choidaehwan.sogaeting.MainActivity
 import com.choidaehwan.sogaeting.R
 import com.choidaehwan.sogaeting.databinding.ActivityIntroBinding
 import com.choidaehwan.sogaeting.databinding.ActivityJoinBinding
+import com.choidaehwan.sogaeting.utils.FirebaseAuthUtils
+import com.choidaehwan.sogaeting.utils.FirebaseRef
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -20,10 +22,18 @@ class JoinActivity : AppCompatActivity() {
 
     private lateinit var joinBinding: ActivityJoinBinding
     private lateinit var auth: FirebaseAuth
+    private val userDataModel = mutableListOf<UserDataModel>()
 
     private var emailFlag = false
     private var pwdFlag = false
     private var pwdCheckFlag = false
+
+    private var nickname = ""
+    private var gender = ""
+    private var city = ""
+    private var age = ""
+    private var uid = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         joinBinding = ActivityJoinBinding.inflate(layoutInflater)
@@ -44,13 +54,22 @@ class JoinActivity : AppCompatActivity() {
             val getPwd = joinBinding.pwdArea.text.toString()
             val getPwdChk = joinBinding.pwdCheckArea.text.toString()
 
+            nickname = joinBinding.nicknameArea.text.toString()
+            gender = joinBinding.genderArea.text.toString()
+            city = joinBinding.cityArea.text.toString()
+            age = joinBinding.ageArea.text.toString()
+
             if (emailFlag && pwdFlag && pwdCheckFlag) {
                 auth.createUserWithEmailAndPassword(getEmail, getPwd)
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
-                            Toast.makeText(baseContext, "회원가입 완료", Toast.LENGTH_SHORT,).show()
                             val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
+
+                            uid = auth.currentUser?.uid.toString()
+                            FirebaseRef.userInfoRef.child(uid)
+                                .setValue(UserDataModel(nickname, gender, city, age))
+                            Toast.makeText(baseContext, "회원가입 완료", Toast.LENGTH_SHORT,).show()
                         } else {
                             Toast.makeText(baseContext, "회원가입 실패", Toast.LENGTH_SHORT,).show()
                         }
