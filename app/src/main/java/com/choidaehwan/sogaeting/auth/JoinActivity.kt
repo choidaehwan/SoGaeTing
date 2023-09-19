@@ -14,6 +14,11 @@ class JoinActivity : AppCompatActivity() {
         joinBinding = ActivityJoinBinding.inflate(layoutInflater)
         setContentView(joinBinding.root)
 
-        joinBinding
+        joinBinding.joinBtn.setOnClickListener {
+            val getEmail = joinBinding.emailArea.text.toString()
+            val getPwd = joinBinding.pwdArea.text.toString()
+
+
+        }
     }
 }
