@@ -2,12 +2,18 @@ package com.choidaehwan.sogaeting.auth
 
 import android.content.ContentValues.TAG
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import com.choidaehwan.sogaeting.MainActivity
 import com.choidaehwan.sogaeting.R
 import com.choidaehwan.sogaeting.databinding.ActivityIntroBinding
@@ -17,12 +23,15 @@ import com.choidaehwan.sogaeting.utils.FirebaseRef
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
+import java.io.ByteArrayOutputStream
 
 class JoinActivity : AppCompatActivity() {
 
     private lateinit var joinBinding: ActivityJoinBinding
     private lateinit var auth: FirebaseAuth
     private val userDataModel = mutableListOf<UserDataModel>()
+    private var isImageUpload = false
 
     private var emailFlag = false
     private var pwdFlag = false
@@ -41,25 +50,67 @@ class JoinActivity : AppCompatActivity() {
 
         auth = Firebase.auth
 
+
+        getProfileImg()
         emailErrorCheck()
         pwdErrorCheck()
         pwdDuplicateCheck()
         join()
 
     }
+
+    fun getProfileImg() {
+        val getAction = registerForActivityResult(
+            ActivityResultContracts.GetContent(),
+            ActivityResultCallback { uri ->
+                joinBinding.imageArea.setImageURI(uri)
+            }
+        )
+
+        joinBinding.imageArea.setOnClickListener {
+//            val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+//            startActivityForResult(gallery, 100)
+            //isImageUpload = true
+            getAction.launch("image/*")
+            isImageUpload = true
+        }
+    }
     fun join() {
         joinBinding.joinBtn.setOnClickListener {
+            var isToGoJoin = true
 
             val getEmail = joinBinding.emailArea.text.toString()
             val getPwd = joinBinding.pwdArea.text.toString()
             val getPwdChk = joinBinding.pwdCheckArea.text.toString()
+
+            if (getEmail.isEmpty()) {
+                isToGoJoin = false
+                Toast.makeText(this, "이메일을 입력해주세요", Toast.LENGTH_SHORT).show()
+            }
+            else if (getPwd.isEmpty()) {
+                isToGoJoin = false
+                Toast.makeText(this, "비밀번호를 입력해주세요", Toast.LENGTH_SHORT).show()
+            }
+            else if (getPwdChk.isEmpty()) {
+                isToGoJoin = false
+                Toast.makeText(this, "비밀번호확인을 입력해주세요", Toast.LENGTH_SHORT).show()
+            }
+            else if (!getPwd.equals(getPwdChk)) {
+                isToGoJoin = false
+                Toast.makeText(this, "비밀번호가 일치하지않습니다", Toast.LENGTH_SHORT).show()
+            }
+
+            else if (getPwd.length < 6) {
+                isToGoJoin = false
+                Toast.makeText(this, "비밀번호가 6자리 이상이어야합니다.", Toast.LENGTH_SHORT).show()
+            }
 
             nickname = joinBinding.nicknameArea.text.toString()
             gender = joinBinding.genderArea.text.toString()
             city = joinBinding.cityArea.text.toString()
             age = joinBinding.ageArea.text.toString()
 
-            if (emailFlag && pwdFlag && pwdCheckFlag) {
+            if (emailFlag && pwdFlag && pwdCheckFlag && isToGoJoin) {
                 auth.createUserWithEmailAndPassword(getEmail, getPwd)
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
@@ -69,6 +120,8 @@ class JoinActivity : AppCompatActivity() {
                             uid = auth.currentUser?.uid.toString()
                             FirebaseRef.userInfoRef.child(uid)
                                 .setValue(UserDataModel(nickname, gender, city, age))
+
+                            imageUpload(uid)
                             Toast.makeText(baseContext, "회원가입 완료", Toast.LENGTH_SHORT,).show()
                         } else {
                             Toast.makeText(baseContext, "회원가입 실패", Toast.LENGTH_SHORT,).show()
@@ -145,4 +198,35 @@ class JoinActivity : AppCompatActivity() {
         })
 
     }
+
+    private fun imageUpload(uid: String) {
+        if (isImageUpload) {
+            val storage = Firebase.storage
+            val storageRef = storage.reference
+            val mountainsRef = storageRef.child(uid)
+
+            val imageView = joinBinding.imageArea
+            imageView.isDrawingCacheEnabled = true
+            imageView.buildDrawingCache()
+            val bitmap = (imageView.drawable as BitmapDrawable).bitmap
+            val baos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            val data = baos.toByteArray()
+
+            var uploadTask = mountainsRef.putBytes(data)
+            uploadTask.addOnFailureListener {
+                // Handle unsuccessful uploads
+            }.addOnSuccessListener { taskSnapshot ->
+                // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
+                // ...
+            }
+        }
+    }
+
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (resultCode == AppCompatActivity.RESULT_OK && requestCode == 100) {
+//            joinBinding.imageArea.setImageURI(data?.data)
+//        }
+//    }
 }

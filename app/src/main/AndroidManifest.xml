@@ -15,6 +15,9 @@
         android:theme="@style/Theme.SoGaeTing"
         tools:targetApi="31">
         <activity
+            android:name=".setting.MyPageActivity"
+            android:exported="false" />
+        <activity
             android:name=".auth.LoginActivity"
             android:exported="false" />
         <activity

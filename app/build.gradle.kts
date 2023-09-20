@@ -51,6 +51,9 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-auth-ktx") // auth
     implementation("com.google.firebase:firebase-database-ktx") // realtime database
+    implementation("com.google.firebase:firebase-storage-ktx") // storage
+
+    implementation("com.github.bumptech.glide:glide:4.16.0") //glide
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
