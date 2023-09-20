@@ -29,9 +29,7 @@ class MyPageActivity : AppCompatActivity() {
     }
 
     fun getMyData() {
-        // Read from the database
         FirebaseRef.userInfoRef.child(FirebaseAuthUtils.getUid())
-            //.child(FirebaseAuthUtils.getUid())
             .addValueEventListener(object :
                 ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {

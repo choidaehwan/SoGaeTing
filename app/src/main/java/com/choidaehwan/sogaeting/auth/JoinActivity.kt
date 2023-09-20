@@ -115,11 +115,13 @@ class JoinActivity : AppCompatActivity() {
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
                             val intent = Intent(this, MainActivity::class.java)
+                            intent.flags =
+                                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             startActivity(intent)
 
                             uid = auth.currentUser?.uid.toString()
                             FirebaseRef.userInfoRef.child(uid)
-                                .setValue(UserDataModel(nickname, gender, city, age))
+                                .setValue(UserDataModel(uid, nickname, gender, city, age))
 
                             imageUpload(uid)
                             Toast.makeText(baseContext, "회원가입 완료", Toast.LENGTH_SHORT,).show()
