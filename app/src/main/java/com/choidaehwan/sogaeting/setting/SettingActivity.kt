@@ -7,6 +7,7 @@ import android.widget.Toast
 import com.choidaehwan.sogaeting.R
 import com.choidaehwan.sogaeting.auth.IntroActivity
 import com.choidaehwan.sogaeting.databinding.ActivitySettingBinding
+import com.choidaehwan.sogaeting.message.MyLikeListActivity
 import com.choidaehwan.sogaeting.utils.FirebaseAuthUtils
 
 class SettingActivity : AppCompatActivity() {
@@ -18,6 +19,7 @@ class SettingActivity : AppCompatActivity() {
         setContentView(settingBinding.root)
 
         goMypage()
+        goMyMatchingList()
         doLogout()
     }
 
@@ -36,6 +38,13 @@ class SettingActivity : AppCompatActivity() {
             val intent = Intent(this, IntroActivity::class.java)
             intent.flags =
                 Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+        }
+    }
+
+    fun goMyMatchingList() {
+        settingBinding.myLikeList.setOnClickListener {
+            val intent = Intent(this, MyLikeListActivity::class.java)
             startActivity(intent)
         }
     }
