@@ -31,6 +31,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var manager: CardStackLayoutManager
     private val userDataModel = mutableListOf<UserDataModel>()
     private val itemKeyList = ArrayList<String>()
+    private var userCount = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -45,6 +47,18 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onCardSwiped(direction: Direction?) {
+                if (direction == Direction.Right) {
+                    Toast.makeText(baseContext, "right", Toast.LENGTH_SHORT).show()
+                }
+                if (direction == Direction.Left) {
+                    Toast.makeText(baseContext, "left", Toast.LENGTH_SHORT).show()
+                }
+
+                userCount += 1
+                if (userCount == userDataModel.count()) {
+                    getUserDataList()
+                    Toast.makeText(baseContext, "refresh", Toast.LENGTH_LONG).show()
+                }
 
             }
 
